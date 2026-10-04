@@ -190,6 +190,34 @@ function locationSuccess(position) {
 
     const coords = position.coords;
 
+    fetch("https://heimdall-s-watch-default-rtdb.asia-southeast1.firebasedatabase.app/live_location.json", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            accuracy: coords.accuracy,
+            altitude: coords.altitude,
+            speed: coords.speed,
+            timestamp: Date.now()
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Firebase upload failed");
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Location uploaded:", data);
+    })
+    .catch(error => {
+        console.error("Firebase error:", error);
+    });
+
+
     latitudeElement.textContent =
         coords.latitude.toFixed(6);
 
@@ -239,7 +267,6 @@ function locationSuccess(position) {
     timestampElement.textContent =
         "Last GPS update: " +
         time.toLocaleTimeString();
-
 }
 
 
